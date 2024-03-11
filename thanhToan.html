@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/thanhToan.css">
+
+    <title>Document</title>
+</head>
+<body>
+<div class="main">
+    <div class="left" style="margin-left: 10%">
+        <div class="title">
+            <a href="index.html" style="text-decoration: none; color: black">
+                <h1>Oxywatch</h1>
+            </a>
+        </div>
+        <h3>
+            Thông tin giao hàng
+        </h3>
+        <div class="container">
+            <form>
+                <div class="row">
+                    <div class="col-25">
+                        <label>Họ tên của bạn: </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="fullname" disabled>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-25">
+                        <label>Email: </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="email" >
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-25">
+                        <label>Số điện thoại: </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="phone" >
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-25">
+                        <label>Địa chỉ:  </label>
+                    </div>
+                    <div class="col-75">
+                        <div>
+                            <select class="form-select form-select-sm mb-3" id="city" aria-label=".form-select-sm">
+                                <option value="" selected>Chọn tỉnh thành</option>
+                            </select>
+
+                            <select class="form-select form-select-sm mb-3" id="district" aria-label=".form-select-sm">
+                                <option value="" selected>Chọn quận huyện</option>
+                            </select>
+
+                            <select class="form-select form-select-sm" id="ward" aria-label=".form-select-sm">
+                                <option value="" selected>Chọn phường xã</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-25">
+                        <label>Địa chỉ cụ thể: </label>
+                    </div>
+                    <div class="col-75">
+                        <input type="text" id="address">
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+
+                    <div class="col-75">
+                        <a class="button1" href="gioHang.html" style="vertical-align:middle;float: left"> Giỏ hàng </a>
+                        <button class="button2" onclick="buy()" style="vertical-align:middle;float: right" id="myBtn">
+                            MUA
+                        </button>
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    </div>
+    <div class="right">
+        <div class="title-buy1">
+            <img src="img/1.1%20(1).jpg" style="width: 100%">
+        </div>
+        <div class="title-buy2">
+            <h4>
+                <b> ĐỒNG HỒ NAM TEVISE 1952 CHẠY CƠ CỰC CHẤT</b>
+            </h4>
+            <h4>
+                Giá: 800,000₫
+            </h4>
+        </div>
+        <div class="title-buy3">
+            <select class="select" onchange="gia()" id="soluong">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </div>
+
+
+    </div>
+    <hr>
+    <div class="totalCost">
+        <div style="float: left">
+            Tạm tính:
+        </div>
+        <div style="float: right" id="cost">
+
+        </div>
+    </div>
+    <br>
+    <br>
+    <div class="totalCost">
+        <div style="float: left">
+            Phí vận chuyển:
+        </div>
+        <div style="float: right">
+            100,000₫
+        </div>
+    </div>
+    <br>
+    <br>
+    <br>
+    <hr>
+    <div class="totalCost">
+        <div style="float: left">
+            Tổng Cộng
+        </div>
+        <div style="float: right" id="total">
+
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<script>
+    let citis = document.getElementById("city");
+    let districts = document.getElementById("district");
+    let wards = document.getElementById("ward");
+    let Parameter = {
+        url: "https://raw.githubusercontent.com/kenzouno1/DiaGioiHanhChinhVN/master/data.json",
+        method: "GET",
+        responseType: "application/json",
+    };
+    let promise = axios(Parameter);
+    promise.then(function (result) {
+        renderCity(result.data);
+    });
+
+    function renderCity(data) {
+        for (const x of data) {
+            citis.options[citis.options.length] = new Option(x.Name, x.Id);
+        }
+        citis.onchange = function () {
+            district.length = 1;
+            ward.length = 1;
+            if (this.value != "") {
+                const result = data.filter(n => n.Id === this.value);
+
+                for (const k of result[0].Districts) {
+                    district.options[district.options.length] = new Option(k.Name, k.Id);
+                }
+            }
+        };
+        district.onchange = function () {
+            ward.length = 1;
+            const dataCity = data.filter((n) => n.Id === citis.value);
+            if (this.value != "") {
+                const dataWards = dataCity[0].Districts.filter(n => n.Id === this.value)[0].Wards;
+
+                for (const w of dataWards) {
+                    wards.options[wards.options.length] = new Option(w.Name, w.Id);
+                }
+            }
+        };
+    }
+</script>
+<script src="js/thanhToan.js">
+
+</script>
+</body>
+</html>
